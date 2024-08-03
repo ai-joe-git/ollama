@@ -1,0 +1,25 @@
+# Use a base image with curl and sh installed
+FROM ubuntu:latest
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Update the package list and install dependencies
+RUN apt-get update && \
+    apt-get install -y curl && \
+    apt-get clean
+
+# Install the Ollama command line tool
+RUN curl -fsSL https://ollama.com/install.sh | sh
+
+# Create a directory for Ollama data
+RUN mkdir -p /opt/ollama/data
+
+# Define a volume for Ollama data
+VOLUME /opt/ollama/data
+
+# Set the working directory
+WORKDIR /opt/ollama/data
+
+# Set the default command to run when the container starts
+CMD ["ollama", "--help"]
