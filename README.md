@@ -4,6 +4,179 @@
   </a>
 </div>
 
+# Ollama for Intel Core Ultra - Complete Guide
+
+This repository provides a comprehensive guide and automated scripts to run Ollama with accelerated performance using Intel Core Ultra processors (formerly Meteor Lake) on Windows.
+
+## Overview
+
+Intel Core Ultra processors integrate a Neural Processing Unit (NPU) and an Integrated Graphics Processing Unit (iGPU), significantly accelerating local Large Language Model (LLM) inference. This project simplifies the setup process, enabling Ollama to leverage these hardware accelerators seamlessly.
+
+## System Requirements
+
+-   **Processor:** Intel Core Ultra 5, 7, or 9 series
+-   **Operating System:** Windows 10/11 (22H2 or later recommended)
+-   **Memory:** 16GB RAM minimum (32GB recommended)
+-   **Storage:** 20GB+ free disk space
+-   **Software:**
+    -   Microsoft Visual Studio Build Tools 2022
+    -   Miniforge (Conda)
+    -   Intel oneAPI Base Toolkit
+    -   Latest Intel Graphics Drivers
+
+## Installation Guide
+
+### Automated Installation (Recommended)
+
+These automated scripts simplify the entire setup process:
+
+1.  **Download All Files:**
+
+    -   `prerequisites.bat`
+    -   `install.bat`
+    -   `start.bat`
+    -   `master_install.bat`
+
+2.  **Run `master_install.bat` as Administrator:**
+
+    -   This script installs all prerequisites:
+
+        -   Visual Studio Build Tools
+        -   Miniforge (Conda)
+        -   Intel oneAPI Base Toolkit
+        -   Configures Environment Variables
+
+        **Important:** After running, the script will prompt you to restart your computer. Please reboot at this stage.
+
+3.  **Run `install.bat` as Administrator (After Reboot):**
+
+    -   This script performs the core setup:
+
+        -   Creates Conda Environment
+        -   Installs IPEX-LLM dependencies
+        -   Initializes Ollama
+
+4.  **Run `start.bat` to Launch Ollama:**
+
+    -   This script activates Conda environment and starts the Ollama server.
+
+### Manual Installation (If Automated Fails)
+
+1.  **Install Visual Studio Build Tools:**
+
+    -   Download from: [https://visualstudio.microsoft.com/downloads/](https://visualstudio.microsoft.com/downloads/)
+    -   Select: "Build Tools for Visual Studio 2022"
+    -   Choose the "C++ build tools" workload.
+
+2.  **Install Miniforge:**
+
+    -   Download from: [https://github.com/conda-forge/miniforge/releases](https://github.com/conda-forge/miniforge/releases)
+    -   Select: "Miniforge3-Windows-x86_64.exe"
+    -   During installation:
+        -   Select "Just Me" Installation
+        -   Register Python as default
+        -   Add Conda to System PATH
+
+3.  **Install Intel oneAPI Base Toolkit:**
+
+    -   Download from: [https://www.intel.com/content/www/us/en/developer/tools/oneapi/base-toolkit-download.html](https://www.intel.com/content/www/us/en/developer/tools/oneapi/base-toolkit-download.html)
+    -   During installation, select the "Intel(R) DPC++/C++ Compiler" component.
+
+4.  **Update Intel Graphics Drivers:**
+
+    -   Download from: [https://www.intel.com/content/www/us/en/download/726609/intel-driver-support-assistant.html](https://www.intel.com/content/www/us/en/download/726609/intel-driver-support-assistant.html)
+
+5.  **Configure Environment Variables:**
+
+    -   Open System Environment Variables (Control Panel -> System and Security -> System -> Advanced system settings -> Environment Variables)
+    -   Verify the `PATH` variable includes the following entries:
+
+        -   `C:\Users\%USERNAME%\Miniforge3`
+        -   `C:\Users\%USERNAME%\Miniforge3\Scripts`
+        -   `C:\Program Files (x86)\Intel\oneAPI\compiler\latest\windows\bin`
+
+6.  **Create Conda Environment:**
+
+    -   Open PowerShell as Administrator
+
+    ```
+    conda create -n ollama-intel python=3.11
+    conda activate ollama-intel
+    ```
+
+7.  **Install IPEX-LLM Dependencies:**
+
+    ```
+    conda activate ollama-intel
+    pip install sympy==1.12
+    pip install --pre "ipex-llm[cpp]" --extra-index-url https://pytorch-extension.intel.com/release-whl/stable/cpu/us/
+    ```
+
+8.  **Initialize Ollama:**
+
+    ```
+    mkdir $env:USERPROFILE\ollama-intel
+    cd $env:USERPROFILE\ollama-intel
+    init-ollama.bat
+    ```
+
+9.  **Set Execution Policy:**
+
+    ```
+    Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+    ```
+
+### Running Ollama
+
+1.  **Start Ollama:**
+
+    -   Run `start.bat` from the repository directory as an administrator.
+
+2.  **Access Ollama:**
+
+    -   Open your web browser and navigate to `http://localhost:11434`.
+
+### Verification
+
+1.  **Verify Intel GPU Detection:**
+
+    -   Run the following command in PowerShell:
+
+        ```
+        sycl-ls | Select-String "Level-Zero"
+        ```
+
+        -   The output should show your Intel GPU.
+
+2.  **Run Ollama Doctor:**
+
+    -   This will run diagnostics on the setup.
+
+        ```
+        ollama doctor
+        ```
+
+### Troubleshooting
+
+-   **GPU Not Detected:**
+    -   Verify the following:
+        -   Intel GPU drivers are up-to-date.
+        -   Intel oneAPI Base Toolkit is correctly installed.
+        -   Environment variables are correctly set.
+        -   The correct version of IPEX-LLM is installed.
+
+### License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+### Acknowledgments
+
+-   Intel for developing IPEX-LLM and optimizing performance on Intel hardware.
+-   The Ollama team for creating an accessible and powerful local LLM platform.
+-   All contributors who have helped refine this guide and automated scripts.
+
+
+
 # Ollama
 
 Get up and running with large language models.
